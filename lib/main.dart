@@ -33,6 +33,9 @@ class _JankenPageState extends State<JankenPage> {
   String myHand = "✊";
   String computerHand = "✊";
   String result = "引き分け";
+  int numberOfFight = 1;
+  int yourFightResult = 0;
+  int computerFightResult = 0;
   
   void selectHand(String selectedHand) {
     myHand = selectedHand;
@@ -61,19 +64,39 @@ class _JankenPageState extends State<JankenPage> {
   }
 
   void judge() {
-    if (myHand == computerHand) {
-      result = "引き分け";
-      setState(() {});
-    } else if (
-      myHand == "✊" && computerHand == "✌" || 
-      myHand == "✋" && computerHand == "✊"
-    ) {
-      result = "勝ち";
-      setState(() {});
+    if (numberOfFight == 5) {
+      judgeFinal();
     } else {
-      result = "負け";
-      setState(() {});
+      numberOfFight++;
+      if (myHand == computerHand) {
+        result = "引き分け";
+        setState(() {});
+      } else if (
+        myHand == "✊" && computerHand == "✌" || 
+        myHand == "✋" && computerHand == "✊"
+      ) {
+        result = "あなたの勝ち";
+        yourFightResult++;
+        setState(() {});
+      } else {
+        result = "あなたの負け";
+        computerFightResult++;
+        setState(() {});
+      }
     }
+  }
+
+  void judgeFinal() {
+      if (computerFightResult < yourFightResult) {
+        result = "あなたの勝ち！";
+        setState(() {});
+      } else if (yourFightResult < computerFightResult) {
+        result = "あなたの負け！";
+        setState(() {});
+      } else {
+        result = "引き分け！";
+        setState(() {});
+      }
   }
 
   @override
@@ -82,7 +105,17 @@ class _JankenPageState extends State<JankenPage> {
       appBar: AppBar(title: Text('じゃんけん')),
       body: Center(
         child: Column(children: [
+          ElevatedButton(child: Text('リセット'), onPressed: () {
+            result = "引き分け";
+            numberOfFight = 1;
+            yourFightResult = 0;
+            computerFightResult = 0;
+            setState((){});
+          },),
+          Text("5回勝負: "+numberOfFight.toString()+"回勝負",style: TextStyle(fontSize: 32)),
           Text(result, style: TextStyle(fontSize: 32)),
+          Text('コンピュータの勝敗数:'),
+          Text('あなたの勝敗数:'),
           SizedBox(height: 48),
           Text("コンピュータ "+computerHand, style: TextStyle(fontSize: 32)),
           SizedBox(height: 48),
